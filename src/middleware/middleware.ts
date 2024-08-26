@@ -5,19 +5,19 @@ import { catchError } from "./catchError";
 import { NextFunction, Request, Response } from 'express';
 import { userModel } from "../Models/user.model";
 
-export const checkEmailExist = async (req: Request, res: Response, next: NextFunction) => {
+export const checkEmailExist = catchError(async (req: Request, res: Response, next: NextFunction) => {
     let user = await userModel.findOne({ email: req.body.email })
     if (user) return res.status(409).json({ message: "email already exists!" })
     next()
-}
-export const getUserHeader = async (req: Request, res: Response, next: NextFunction) => {
+})
+export const getUserHeader = catchError(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.token) {
         return res.status(409).json({ message: "You are not logged in" })
     }
     const decoded = jwt.verify(req.headers.token as string, 'key') as string | JwtPayload;
     req.body.user = decoded
     next()
-}
+})
 export const GetSingleUser = catchError(async (req: Request, res: Response, next: NextFunction) => {
     let users = await userModel.findById(req.params.id)
     if (!users) return res.json({ message: "user doesn't exist!" })

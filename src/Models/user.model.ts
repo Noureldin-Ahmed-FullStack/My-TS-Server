@@ -36,11 +36,11 @@ const schema = new mongoose.Schema({
         enum: ['user', 'admin', 'doctor'],
         default: 'user'
     }
-    // ,
-    // decided: {
-    //     type: Boolean,
-    //     default: false
-    // },
+    ,
+    decided: {
+        type: Boolean,
+        default: false
+    },
     // pets: [
     //     {
     //         type: mongoose.Types.ObjectId,

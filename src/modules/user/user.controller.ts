@@ -32,12 +32,12 @@ const signUp = catchError(async (req: Request, res: Response) => {
     res.json({ message: "success" })
 })
 const test = catchError(async (req: Request, res: Response) => {
-    
+
     res.json({ message: "success" })
 })
 const setUserRole = catchError(async (req: Request, res: Response) => {
-    const isDoctor = req.body.isDoctor
-    await userModel.findByIdAndUpdate(req.body.user.uid, { isDoctor: isDoctor, decided: true })
+    const newRole = req.body.role
+    await userModel.findByIdAndUpdate(req.body.user.uid, { role: newRole, decided: true }, { runValidators: true })
     res.json({ message: "success" })
 })
 const getAllUsers = catchError(async (req: Request, res: Response) => {
