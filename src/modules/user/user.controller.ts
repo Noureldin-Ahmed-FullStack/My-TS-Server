@@ -6,8 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { userModel } from "../../Models/user.model"
 import { catchError } from "../../middleware/catchError";
 import { NextFunction, Request, Response } from 'express';
-
-
+import nodemailer from "nodemailer"
+import { config } from "../../secrets";
+const MAIL_KEY = config.MAIL_KEY;
 
 
 interface SignInBody {
@@ -34,6 +35,43 @@ const signUp = catchError(async (req: Request, res: Response) => {
 const test = catchError(async (req: Request, res: Response) => {
 
     res.json({ message: "success" })
+})
+const contactMe = catchError(async (req: Request, res: Response) => {
+    interface excursion {
+        title: string,
+        describtion: string,
+        Images: string[]
+    }
+    // await sendContactMeMail(req.body.userEmail, req.body.phone, req.body.userMessage, req.body.excursion, req.body.reciver,)
+    const excursion: excursion = req.body.excursion
+    if (!req.body.userEmail) {
+        req.body.userEmail = 'noureldin.20200396@gmail.com'
+    }
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+            user: "noureldin.20200396@gmail.com",
+            pass: MAIL_KEY,
+        },
+    });
+    const imagesHtml = excursion.Images
+        .map((src) => `<img src="${src}" style="max-width: 350px; height: auto; display: inline; margin-bottom: 10px;" />`)
+        .join("");
+
+    const recipients = Array.isArray(req.body.reciver) ? req.body.reciver.join(", ") : req.body.reciver;
+    const info = await transporter.sendMail({
+        from: `"Client ${req.body.userEmail} ${req.body.userPhone}" <noureldin.20200396@gmail.com>`, // Sender address
+        to: req.body.reciver,
+        subject: `"Portfolio Contact Me"`, // Subject line
+        html: `<b>${req.body.userEmail}</b> <br />
+              <p>${req.body.userMessage}</p> <br />
+              <h2>${req.body.excursion.title}</h2>
+              <h6>${req.body.excursion.describtion}</h6>
+              ${imagesHtml}`, // HTML body with multiple images
+    });
+    console.log("Message sent: %s", info.messageId);
+    res.json({ message: "success", ...req.body })
 })
 const setUserRole = catchError(async (req: Request, res: Response) => {
     const newRole = req.body.role
@@ -150,7 +188,7 @@ export {
     Validate,
     updateUserPic,
     updateUser,
-    // ContactMe,
+    contactMe,
     setUserRole,
     test
 }

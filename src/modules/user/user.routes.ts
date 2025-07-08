@@ -2,7 +2,7 @@ import express from 'express'
 import { hashPass, validateShema } from '../../middleware/hashPassword'
 import { checkEmailExist, getUserHeader } from '../../middleware/middleware'
 import { upload } from '../../middleware/FileUpload/uploads'
-import { getAllDoctors, getAllUsers, GetSingleUser, GetSingleUserRes, setUserRole, signIn, signUp, test, updateUser, updateUserPic, Validate } from './user.controller'
+import { contactMe, getAllDoctors, getAllUsers, GetSingleUser, GetSingleUserRes, setUserRole, signIn, signUp, test, updateUser, updateUserPic, Validate } from './user.controller'
 
 const userRouter = express.Router()
 
@@ -11,6 +11,7 @@ userRouter.post('/signIn', signIn)
 userRouter.post('/userRole', getUserHeader, setUserRole)
 // userRouter.post('/ContactMe', ContactMe)
 userRouter.get('/users', getAllUsers)
+userRouter.post('/contactMe', contactMe)
 userRouter.get('/usersTest', test)
 userRouter.get('/doctors', getAllDoctors)
 userRouter.get('/getSingleUser/:id', GetSingleUserRes)

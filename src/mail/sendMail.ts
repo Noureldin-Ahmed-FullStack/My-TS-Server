@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer"
 import { config } from "../secrets";
 const MAIL_KEY = config.MAIL_KEY;
-export async function sendEmail(userName: string, userEmail: string, userPhone: string, userMessage: string, artPiecePhotoSource: string, reciver: string) {
+export async function sendEmail(userEmail: string, userPhone: string, userMessage: string, excursion: string[], reciver: string) {
     if (!userEmail) {
         userEmail = 'noureldin.20200396@gmail.com'
     }
@@ -10,23 +10,26 @@ export async function sendEmail(userName: string, userEmail: string, userPhone: 
         auth: {
             // TODO: replace `user` and `pass` values from <https://forwardemail.net>
             user: "noureldin.20200396@gmail.com",
-            pass: "usiydjdwpzbfkjye",
+            pass: MAIL_KEY,
         },
     });
 
+    const imagesHtml = excursion
+        .map((src) => `<img src="${src}" style="max-width: 100%; height: auto; display: block; margin-bottom: 10px;" />`)
+        .join("");
+
     const info = await transporter.sendMail({
-        from: `"${userName} phone: ${userPhone} <${userEmail}>" <${userEmail}>`, // sender address
+        from: `"Client ${userEmail} ${userPhone}" <noureldin.20200396@gmail.com>`, // Sender address
         to: reciver,
         subject: `"Portfolio Contact Me"`, // Subject line
         html: `<b>${userEmail}</b> <br />
           <p>${userMessage}</p> <br />
-          <img src="${artPiecePhotoSource}" />
-          `, // html body
+          ${imagesHtml}`, // HTML body with multiple images
     });
 
     console.log("Message sent: %s", info.messageId);
 }
-export async function sendArtRequestMail(userEmail: string,userPhone: string, userMessage: string, excursion: string[], reciver: string) {
+export async function sendContactMeMail(userEmail: string, userPhone: string, userMessage: string, excursion: string[], reciver: string) {
     if (!userEmail) {
         userEmail = 'noureldin.20200396@gmail.com'
     }
