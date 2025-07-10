@@ -43,7 +43,7 @@ const contactMe = catchError(async (req: Request, res: Response) => {
         Images: string[]
     }
     // await sendContactMeMail(req.body.userEmail, req.body.phone, req.body.userMessage, req.body.excursion, req.body.reciver,)
-    const excursion: excursion = req.body.excursion
+    const excursion: excursion = req.body.excursion || null
     if (!req.body.userEmail) {
         req.body.userEmail = 'noureldin.20200396@gmail.com'
     }
@@ -55,10 +55,12 @@ const contactMe = catchError(async (req: Request, res: Response) => {
             pass: MAIL_KEY,
         },
     });
-    const imagesHtml = excursion.Images
-        .map((src) => `<img src="${src}" style="max-width: 350px; height: auto; display: inline; margin-bottom: 10px;" />`)
-        .join("");
-
+    let imagesHtml = null
+    if (excursion) {
+        imagesHtml = excursion.Images
+            .map((src) => `<img src="${src}" style="max-width: 350px; height: auto; display: inline; margin-bottom: 10px;" />`)
+            .join("");
+    }
     const recipients = Array.isArray(req.body.reciver) ? req.body.reciver.join(", ") : req.body.reciver;
     const info = await transporter.sendMail({
         from: `"Client ${req.body.userEmail} ${req.body.userPhone}" <noureldin.20200396@gmail.com>`, // Sender address
@@ -66,8 +68,8 @@ const contactMe = catchError(async (req: Request, res: Response) => {
         subject: `"Portfolio Contact Me"`, // Subject line
         html: `<b>${req.body.userEmail}</b> <br />
               <p>${req.body.userMessage}</p> <br />
-              <h2>${req.body.excursion.title}</h2>
-              <h6>${req.body.excursion.describtion}</h6>
+              <h2>${req.body.excursion && req.body.excursion.title}</h2>
+              <h6>${req.body.excursion && req.body.excursion.describtion}</h6>
               ${imagesHtml}`, // HTML body with multiple images
     });
     console.log("Message sent: %s", info.messageId);
