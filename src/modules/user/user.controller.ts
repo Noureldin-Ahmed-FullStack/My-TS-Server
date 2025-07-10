@@ -56,10 +56,14 @@ const contactMe = catchError(async (req: Request, res: Response) => {
         },
     });
     let imagesHtml = null
+    let view = ''
     if (excursion) {
         imagesHtml = excursion.Images
             .map((src) => `<img src="${src}" style="max-width: 350px; height: auto; display: inline; margin-bottom: 10px;" />`)
             .join("");
+        view = `<h2>${req.body.excursion && req.body.excursion.title}</h2>
+              <h5>${req.body.excursion && req.body.excursion.describtion}</h5>
+              ${imagesHtml}`
     }
     const recipients = Array.isArray(req.body.reciver) ? req.body.reciver.join(", ") : req.body.reciver;
     const info = await transporter.sendMail({
@@ -67,10 +71,7 @@ const contactMe = catchError(async (req: Request, res: Response) => {
         to: req.body.reciver,
         subject: `"Portfolio Contact Me"`, // Subject line
         html: `<b>${req.body.userEmail}</b> <br />
-              <p>${req.body.userMessage}</p> <br />
-              <h2>${req.body.excursion && req.body.excursion.title}</h2>
-              <h6>${req.body.excursion && req.body.excursion.describtion}</h6>
-              ${imagesHtml}`, // HTML body with multiple images
+              <p>${req.body.userMessage}</p> <br />` + view,
     });
     console.log("Message sent: %s", info.messageId);
     res.json({ message: "success", ...req.body })
